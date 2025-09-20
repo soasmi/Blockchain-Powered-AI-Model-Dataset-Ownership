@@ -1,0 +1,237 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 221.2 83.2% 53.3%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222.2 84% 4.9%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96%;
+    --accent-foreground: 222.2 84% 4.9%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 221.2 83.2% 53.3%;
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 217.2 91.2% 59.8%;
+    --primary-foreground: 222.2 84% 4.9%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 224.3 76.3% 94.1%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ring-offset-background;
+  }
+  
+  .btn-primary {
+    @apply btn bg-primary text-primary-foreground hover:bg-primary/90 h-10 py-2 px-4;
+  }
+  
+  .btn-secondary {
+    @apply btn bg-secondary text-secondary-foreground hover:bg-secondary/80 h-10 py-2 px-4;
+  }
+  
+  .btn-outline {
+    @apply btn border border-input hover:bg-accent hover:text-accent-foreground h-10 py-2 px-4;
+  }
+  
+  .btn-ghost {
+    @apply btn hover:bg-accent hover:text-accent-foreground h-10 py-2 px-4;
+  }
+  
+  .btn-sm {
+    @apply h-9 px-3 text-xs;
+  }
+  
+  .btn-lg {
+    @apply h-11 px-8 text-base;
+  }
+  
+  .card {
+    @apply rounded-lg border bg-card text-card-foreground shadow-sm;
+  }
+  
+  .input {
+    @apply flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50;
+  }
+  
+  .textarea {
+    @apply flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50;
+  }
+  
+  .badge {
+    @apply inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2;
+  }
+  
+  .badge-default {
+    @apply badge border-transparent bg-primary text-primary-foreground hover:bg-primary/80;
+  }
+  
+  .badge-secondary {
+    @apply badge border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80;
+  }
+  
+  .badge-outline {
+    @apply badge text-foreground;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-muted;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-muted-foreground/20 rounded-md;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-muted-foreground/30;
+}
+
+/* Code syntax highlighting */
+.code-block {
+  @apply bg-muted rounded-md p-4 font-mono text-sm overflow-x-auto;
+}
+
+/* GitHub-like file tree */
+.file-tree {
+  @apply space-y-1;
+}
+
+.file-tree-item {
+  @apply flex items-center space-x-2 py-1 px-2 rounded hover:bg-muted cursor-pointer;
+}
+
+.file-tree-item.active {
+  @apply bg-accent text-accent-foreground;
+}
+
+/* Loading animations */
+.loading-dots {
+  @apply inline-flex space-x-1;
+}
+
+.loading-dots > div {
+  @apply w-2 h-2 bg-current rounded-full animate-pulse;
+}
+
+.loading-dots > div:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.loading-dots > div:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+/* Asset type indicators */
+.asset-type-model {
+  @apply text-blue-600 bg-blue-50 border-blue-200;
+}
+
+.asset-type-script {
+  @apply text-green-600 bg-green-50 border-green-200;
+}
+
+.asset-type-dataset {
+  @apply text-purple-600 bg-purple-50 border-purple-200;
+}
+
+/* Marketplace specific styles */
+.price-display {
+  @apply font-mono text-lg font-semibold;
+}
+
+.ethereum-address {
+  @apply font-mono text-sm text-muted-foreground;
+}
+
+.ethereum-address:hover {
+  @apply text-foreground;
+}
+
+/* Responsive grid */
+.asset-grid {
+  @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6;
+}
+
+/* GitHub-like navigation */
+.nav-item {
+  @apply flex items-center space-x-2 px-3 py-2 text-sm font-medium rounded-md hover:bg-muted transition-colors;
+}
+
+.nav-item.active {
+  @apply bg-accent text-accent-foreground;
+}
+
+/* Status indicators */
+.status-online {
+  @apply w-2 h-2 bg-green-500 rounded-full;
+}
+
+.status-offline {
+  @apply w-2 h-2 bg-gray-400 rounded-full;
+}
+
+.status-pending {
+  @apply w-2 h-2 bg-yellow-500 rounded-full;
+}
+
+/* Transaction status */
+.tx-pending {
+  @apply text-yellow-600 bg-yellow-50 border-yellow-200;
+}
+
+.tx-success {
+  @apply text-green-600 bg-green-50 border-green-200;
+}
+
+.tx-failed {
+  @apply text-red-600 bg-red-50 border-red-200;
+}

@@ -1,0 +1,243 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum AssetType {
+  MODEL
+  SCRIPT
+  DATASET
+}
+
+enum LicenseType {
+  COMMERCIAL
+  NON_COMMERCIAL
+  RESEARCH
+  CUSTOM
+}
+
+enum OrderType {
+  FIXED_PRICE
+  AUCTION
+}
+
+enum OrderStatus {
+  ACTIVE
+  SOLD
+  CANCELLED
+  EXPIRED
+}
+
+enum TransactionStatus {
+  PENDING
+  CONFIRMED
+  FAILED
+}
+
+model User {
+  id                String   @id @default(cuid())
+  walletAddress     String   @unique
+  username          String?  @unique
+  email             String?  @unique
+  displayName       String?
+  bio               String?
+  avatar            String?
+  website           String?
+  twitter           String?
+  github            String?
+  isVerified        Boolean  @default(false)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  // Relations
+  assets            Asset[]
+  orders            Order[]
+  bids              Bid[]
+  licenses          License[]
+  issuedLicenses    License[]
+  transactions      Transaction[]
+  notifications     Notification[]
+
+  @@map("users")
+}
+
+model Asset {
+  id                String    @id @default(cuid())
+  tokenId           BigInt    @unique
+  name              String
+  description       String
+  version           String
+  assetType         AssetType
+  creatorId         String
+  ownerId           String
+  ipfsHash          String    @unique
+  isPublic          Boolean   @default(true)
+  royaltyPercentage Int       @default(0) // Basis points
+  price             BigInt    @default(0) // Wei
+  isForSale         Boolean   @default(false)
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  // Relations
+  creator           User      @relation("AssetCreator", fields: [creatorId], references: [id])
+  owner             User      @relation("AssetOwner", fields: [ownerId], references: [id])
+  versions          AssetVersion[]
+  orders            Order[]
+  licenses          License[]
+  transactions      Transaction[]
+
+  @@map("assets")
+}
+
+model AssetVersion {
+  id          String   @id @default(cuid())
+  assetId     String
+  version     String
+  ipfsHash    String
+  changelog   String?
+  createdAt   DateTime @default(now())
+
+  // Relations
+  asset       Asset    @relation(fields: [assetId], references: [id], onDelete: Cascade)
+
+  @@map("asset_versions")
+}
+
+model Order {
+  id              String      @id @default(cuid())
+  assetId         String
+  sellerId        String
+  buyerId         String?
+  orderType       OrderType
+  price           BigInt
+  startTime       DateTime
+  endTime         DateTime?
+  status          OrderStatus @default(ACTIVE)
+  isAuction       Boolean     @default(false)
+  highestBid      BigInt      @default(0)
+  highestBidderId String?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  // Relations
+  asset           Asset       @relation(fields: [assetId], references: [id])
+  seller          User        @relation("OrderSeller", fields: [sellerId], references: [id])
+  buyer           User?       @relation("OrderBuyer", fields: [buyerId], references: [id])
+  highestBidder   User?       @relation("OrderHighestBidder", fields: [highestBidderId], references: [id])
+  bids            Bid[]
+  transactions    Transaction[]
+
+  @@map("orders")
+}
+
+model Bid {
+  id        String   @id @default(cuid())
+  orderId   String
+  bidderId  String
+  amount    BigInt
+  createdAt DateTime @default(now())
+
+  // Relations
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  bidder    User     @relation(fields: [bidderId], references: [id])
+
+  @@map("bids")
+}
+
+model License {
+  id            String      @id @default(cuid())
+  assetId       String
+  licensorId    String
+  licenseeId    String
+  licenseType   LicenseType
+  price         BigInt
+  duration      BigInt      @default(0) // 0 = perpetual
+  startTime     DateTime
+  endTime       DateTime?
+  isActive      Boolean     @default(true)
+  terms         String?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  // Relations
+  asset         Asset       @relation(fields: [assetId], references: [id])
+  licensor      User        @relation("LicenseLicensor", fields: [licensorId], references: [id])
+  licensee      User        @relation("LicenseLicensee", fields: [licenseeId], references: [id])
+  usageRecords  UsageRecord[]
+  transactions  Transaction[]
+
+  @@map("licenses")
+}
+
+model UsageRecord {
+  id          String   @id @default(cuid())
+  licenseId   String
+  userId      String
+  action      String
+  details     String?
+  createdAt   DateTime @default(now())
+
+  // Relations
+  license     License  @relation(fields: [licenseId], references: [id], onDelete: Cascade)
+
+  @@map("usage_records")
+}
+
+model Transaction {
+  id              String            @id @default(cuid())
+  hash            String            @unique
+  fromAddress     String
+  toAddress       String
+  value           BigInt
+  gasUsed         BigInt?
+  gasPrice        BigInt?
+  blockNumber     BigInt?
+  status          TransactionStatus @default(PENDING)
+  assetId         String?
+  orderId         String?
+  licenseId       String?
+  userId          String
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  // Relations
+  asset           Asset?            @relation(fields: [assetId], references: [id])
+  order           Order?            @relation(fields: [orderId], references: [id])
+  license         License?          @relation(fields: [licenseId], references: [id])
+  user            User              @relation(fields: [userId], references: [id])
+
+  @@map("transactions")
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  title     String
+  message   String
+  type      String
+  isRead    Boolean  @default(false)
+  data      Json?
+  createdAt DateTime @default(now())
+
+  // Relations
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("notifications")
+}
+
+model SystemConfig {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("system_config")
+}
